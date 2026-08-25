@@ -1,1 +1,98 @@
-<h1>Podcast RSS Server draait!</h1>
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Podcast RSS Reader - Eigen Backend</title>
+    <style>
+        :root {
+            --bg-color: #f9fafb;
+            --text-color: #111827;
+            --border-color: #e5e7eb;
+            --accent-color: #2563eb;
+        }
+        body { 
+            font-family: system-ui, -apple-system, sans-serif; 
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            max-width: 800px; 
+            margin: 2rem auto; 
+            padding: 0 1rem; 
+            line-height: 1.6; 
+        }
+        h1 { border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; }
+        .episode { 
+            background: white; border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .episode h2 { margin: 0 0 0.5rem 0; font-size: 1.25rem; color: var(--accent-color); }
+        .episode small { display: block; color: #6b7280; margin-bottom: 1rem; font-weight: 500; }
+        .episode p { margin: 0 0 1.5rem 0; font-size: 0.95rem; }
+        audio { width: 100%; outline: none; }
+        #status { font-weight: bold; margin-bottom: 1rem; }
+        .error { color: #dc2626; }
+    </style>
+</head>
+<body>
+
+    <h1>Podcast Feed (Beveiligd)</h1>
+    <div id="status">Bezig met laden van afleveringen via de backend...</div>
+    <div id="feed"></div>
+
+    <script>
+        // Verwijs nu naar je eigen veilige backend in plaats van de externe proxy
+        const backendUrl = 'http://localhost:3000/api/feed';
+
+        const statusDiv = document.getElementById('status');
+        const feedDiv = document.getElementById('feed');
+
+        fetch(backendUrl)
+            .then(response => {
+                if (!response.ok) throw new Error('Netwerkfout bij het bereiken van de eigen backend.');
+                return response.text(); // We verwachten nu direct ruwe tekst (XML)
+            })
+            .then(xmlString => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlString, 'text/xml');
+                
+                const parseError = xmlDoc.querySelector('parsererror');
+                if (parseError) throw new Error('Fout bij het parsen van de XML data.');
+
+                const items = xmlDoc.querySelectorAll('item');
+                let html = '';
+
+                items.forEach(item => {
+                    const title = item.querySelector('title')?.textContent || 'Geen titel';
+                    let description = item.querySelector('description')?.textContent || 'Geen beschrijving';
+                    
+                    description = description.replace(/(<([^>]+)>)/gi, "").substring(0, 300) + '...';
+
+                    const pubDateRaw = item.querySelector('pubDate')?.textContent;
+                    const pubDate = pubDateRaw ? new Date(pubDateRaw).toLocaleDateString('nl-NL', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Onbekende datum';
+                    
+                    const enclosure = item.querySelector('enclosure');
+                    const audioUrl = enclosure ? enclosure.getAttribute('url') : '';
+
+                    html += `
+                        <div class="episode">
+                            <h2>${title}</h2>
+                            <small>${pubDate}</small>
+                            <p>${description}</p>
+                            ${audioUrl ? `<audio controls src="${audioUrl}" preload="none"></audio>` : ''}
+                        </div>
+                    `;
+                });
+
+                statusDiv.style.display = 'none';
+                feedDiv.innerHTML = html;
+            })
+            .catch(error => {
+                statusDiv.textContent = `Fout: ${error.message}`;
+                statusDiv.className = 'error';
+                console.error(error);
+            });
+    </script>
+
+</body>
+</html>

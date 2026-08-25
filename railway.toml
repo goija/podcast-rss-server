@@ -1,0 +1,2 @@
+[build]
+rustVersion = "nightly"

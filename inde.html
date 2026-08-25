@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VORTEX - Riemann-Posthumus Construct</title>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background-color: #050510; /* Diep VORTEX-blauw/zwart */
+            color: #ffffff; 
+            font-family: 'Courier New', Courier, monospace; 
+        }
+        #ui-laag { 
+            position: absolute; 
+            top: 20px; 
+            width: 100%; 
+            text-align: center; 
+            z-index: 100; 
+            pointer-events: none;
+            letter-spacing: 2px;
+        }
+        h1 { margin: 0; font-size: 1.2rem; color: #00ffcc; text-transform: uppercase; }
+        p { margin: 5px 0 0 0; font-size: 0.8rem; color: #ff00cc; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <div id="ui-laag">
+        <h1>VORTEX Prototype: Riemann-Posthumus</h1>
+        <p>Riemann-sfeer & Geanimeerde "Posthumus" Möbius-band</p>
+    </div>
+
+    <script>
+        // 1. SCÈNE, CAMERA & RENDERER OPZETTEN
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Plaats de camera
+        camera.position.z = 15;
+        camera.position.y = 5;
+
+        // 2. DE RIEMANNBOL (S^2)
+        const sphereGeometry = new THREE.SphereGeometry(3, 32, 32);
+        const sphereMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0x00ffcc, // Cyaan
+            wireframe: true, 
+            transparent: true, 
+            opacity: 0.3 
+        });
+        const riemannSphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+        scene.add(riemannSphere);
+
+        // 3. GENEREREN VAN DE MOBIUSBAND GEOMETRIE (Geparametriseerd)
+        // Een Möbiusband is een oppervlak met één vlak en één rand.
+        function createMobiusGeometry(radius, width, segmentsU, segmentsV) {
+            const geometry = new THREE.BufferGeometry();
+            const vertices = [];
+            const indices = [];
+
+            // Parametrische formule voor een Möbiusband
+            function calculatePoint(u, v) {
+                // u: uiterste lus (0 to 2*PI)
+                // v: breedte van de band (-width to +width)
+                const x = (radius + v / 2 * Math.cos(u / 2)) * Math.cos(u);
+                const y = (radius + v / 2 * Math.cos(u / 2)) * Math.sin(u);
+                const z = v / 2 * Math.sin(u / 2);
+                return new THREE.Vector3(x, y, z);
+            }
+
+            // Genereer vertex-punten
+            for (let i = 0; i <= segmentsU; i++) {
+                const u = (i / segmentsU) * Math.PI * 2;
+                for (let j = 0; j <= segmentsV; j++) {
+                    const v = (j / segmentsV) * width - width / 2;
+                    const p = calculatePoint(u, v);
+                    vertices.push(p.x, p.y, p.z);
+                }
+            }
+
+            // Genereer driehoek-indexen
+            for (let i = 0; i < segmentsU; i++) {
+                for (let j = 0; j < segmentsV; j++) {
+                    const a = i * (segmentsV + 1) + j;
+                    const b = (i + 1) * (segmentsV + 1) + j;
+                    const c = (i + 1) * (segmentsV + 1) + (j + 1);
+                    const d = i * (segmentsV + 1) + (j + 1);
+
+                    // De twist: de laatste segmenten moeten 'omgekeerd' verbonden worden.
+                    if (i === segmentsU - 1) {
+                        // De twist gebeurt hier. We verbinden d-c en a-b 'omgekeerd'.
+                        indices.push(a, b, c);
+                        indices.push(a, c, d);
+                    } else {
+                        indices.push(a, b, c);
+                        indices.push(a, c, d);
+                    }
+                }
+            }
+
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            geometry.setIndex(indices);
+            geometry.computeVertexNormals(); // Voor belichting, optioneel bij wireframe
+            return geometry;
+        }
+
+        const mobiusGeometry = createMobiusGeometry(7, 2, 100, 20); // Straal 7, Breedte 2
+        const mobiusMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0xff00cc, // Magenta
+            wireframe: true, 
+            transparent: true, 
+            opacity: 0.5,
+            side: THREE.DoubleSide // Toon beide 'vlakken', hoewel de topologie éénvlakig is.
+        });
+        const mobiusStrip = new THREE.Mesh(mobiusGeometry, mobiusMaterial);
+        scene.add(mobiusStrip);
+
+        // 4. DE "POSTHUMUS"-WANDELAAR (Geanimeerde punt op de lus)
+        const walkerGeometry = new THREE.SphereGeometry(0.3, 16, 16);
+        const walkerMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff }); // Wit
+        const posthumusWalker = new THREE.Mesh(walkerGeometry, walkerMaterial);
+        scene.add(posthumusWalker);
+
+        // 5. ANIMATIELUS (Dynamische VORTEX)
+        let time = 0;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.005;
+
+            // Roteer de Riemannbol
+            riemannSphere.rotation.y += 0.002;
+
+            // Roteer de Möbiusband (om de x-as voor perspectief)
+            mobiusStrip.rotation.x = Math.PI / 6;
+
+            // Update positie van de Posthumus Wandelaar
+            // De wandelaar reist langs de 'middellijn' (v=0) van de band
+            const u = time % (Math.PI * 4); // De wandelaar reist TWEE volledige lussen (4*PI) voor één 'Möbius-cyclus'
+            const v = 0; // Middellijn
+            
+            // Parametrische formule, hergebruikt voor de wandelaar
+            const radius = 7; // Moet overeenkomen met mobiusGeometry
+            const x = (radius + v / 2 * Math.cos(u / 2)) * Math.cos(u);
+            const y = (radius + v / 2 * Math.cos(u / 2)) * Math.sin(u);
+            const z = v / 2 * Math.sin(u / 2);
+            
+            posthumusWalker.position.set(x, y, z);
+
+            // Zorg dat de wandelaar 'bovenop' de wireframe ligt
+            posthumusWalker.position.applyEuler(mobiusStrip.rotation);
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // 6. SCHERM HERSCHALEN (Responsiviteit)
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VORTEX - Minkowski Ruimtetijd</title>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background-color: #050510; /* VORTEX-diepte */
+            color: #ffffff; 
+            font-family: 'Courier New', Courier, monospace; 
+        }
+        #ui-laag { 
+            position: absolute; 
+            top: 20px; 
+            width: 100%; 
+            text-align: center; 
+            z-index: 100; 
+            pointer-events: none;
+            letter-spacing: 2px;
+        }
+        h1 { margin: 0; font-size: 1.2rem; color: #00ffcc; text-transform: uppercase; }
+        p { margin: 5px 0 0 0; font-size: 0.8rem; color: #ff00cc; }
+        .legenda {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 0.8rem;
+            color: #aaaaaa;
+            pointer-events: none;
+            border-left: 2px solid #00ffcc;
+            padding-left: 10px;
+        }
+        .legenda span.cyan { color: #00ffcc; font-weight: bold; }
+        .legenda span.magenta { color: #ff00cc; font-weight: bold; }
+        .legenda span.white { color: #ffffff; font-weight: bold; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <div id="ui-laag">
+        <h1>VORTEX Node: Minkowski-Zandloper</h1>
+        <p>Topologie van Oorzaak en Gevolg</p>
+    </div>
+    
+    <div class="legenda">
+        <span class="cyan">CYAAN:</span> Absolute Toekomst (Bovenste Kegel)<br>
+        <span class="magenta">MAGENTA:</span> Absolute Verleden (Onderste Kegel)<br>
+        <span class="white">WIT KANTPUNT:</span> Het "Nu" (Coördinaat 0,0,0)<br>
+        <span style="color: #4444ff;">BLAUW RASTER:</span> Ruimtelijk Vlak (Elders)
+    </div>
+
+    <script>
+        // 1. SCÈNE, CAMERA & RENDERER
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        camera.position.z = 15;
+        camera.position.y = 3;
+
+        // Container om alles synchroon te roteren
+        const vortexGroup = new THREE.Group();
+        scene.add(vortexGroup);
+
+        // 2. DE TOEKOMST (Bovenste Kegel)
+        // CylinderGeometry(radiusTop, radiusBottom, height, radialSegments, heightSegments, openEnded)
+        const futureGeo = new THREE.CylinderGeometry(4, 0, 8, 32, 4, true); 
+        const futureMat = new THREE.MeshBasicMaterial({ 
+            color: 0x00ffcc, 
+            wireframe: true, 
+            transparent: true, 
+            opacity: 0.4 
+        });
+        const futureCone = new THREE.Mesh(futureGeo, futureMat);
+        futureCone.position.y = 4; // Verschuif zodat de punt exact op y=0 ligt
+        vortexGroup.add(futureCone);
+
+        // 3. HET VERLEDEN (Onderste Kegel)
+        const pastGeo = new THREE.CylinderGeometry(0, 4, 8, 32, 4, true);
+        const pastMat = new THREE.MeshBasicMaterial({ 
+            color: 0xff00cc, 
+            wireframe: true, 
+            transparent: true, 
+            opacity: 0.4 
+        });
+        const pastCone = new THREE.Mesh(pastGeo, pastMat);
+        pastCone.position.y = -4; // Verschuif zodat de punt exact op y=0 ligt
+        vortexGroup.add(pastCone);
+
+        // 4. HET "NU" (Centraal Brandpunt)
+        const nowGeo = new THREE.SphereGeometry(0.15, 16, 16);
+        const nowMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const nowPoint = new THREE.Mesh(nowGeo, nowMat);
+        vortexGroup.add(nowPoint);
+
+        // 5. HET RUIMTELIJKE VLAK (De 3D-ruimte gereduceerd tot 2D-raster op tijdstip 0)
+        const planeGeo = new THREE.PlaneGeometry(16, 16, 30, 30);
+        const planeMat = new THREE.MeshBasicMaterial({ 
+            color: 0x4444ff, 
+            wireframe: true, 
+            transparent: true, 
+            opacity: 0.15 
+        });
+        const spacePlane = new THREE.Mesh(planeGeo, planeMat);
+        spacePlane.rotation.x = Math.PI / 2; // Leg het vlak plat
+        vortexGroup.add(spacePlane);
+
+        // Kantel de hele groep iets naar voren voor een dynamisch aanzicht
+        vortexGroup.rotation.x = 0.2;
+
+        // 6. ANIMATIELUS
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Laat de Minkowski-structuur langzaam om zijn as (de tijdslijn) draaien
+            vortexGroup.rotation.y += 0.003;
+
+            renderer.render(scene, camera);
+        }
+        
+        animate();
+
+        // 7. HERSCHALEN VAN HET VENSTER
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>

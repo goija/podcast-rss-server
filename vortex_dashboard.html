@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VORTEX Engine v26.5 | 6D Hyper-Dimensional Topological Synthesis</title>
+    <style>
+        :root {
+            --bg-deep: #060913;
+            --bg-card: rgba(13, 21, 39, 0.7);
+            --border-neon: rgba(0, 242, 254, 0.25);
+            --text-primary: #e2e8f0;
+            --text-muted: #94a3b8;
+            
+            /* Wuxing & Quantum Neon Colors */
+            --neon-blue: #00f2fe;
+            --neon-purple: #9d4edd;
+            --neon-red: #ff007f;
+            --neon-gold: #ffb703;
+            --neon-green: #00f5d4;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-deep);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(157, 78, 221, 0.15) 0, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(0, 242, 254, 0.15) 0, transparent 50%);
+            color: var(--text-primary);
+            line-height: 1.7;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Scanbare Header */
+        header {
+            max-width: 1400px;
+            margin: 40px auto;
+            text-align: center;
+            border-bottom: 1px dashed var(--border-neon);
+            padding-bottom: 30px;
+            position: relative;
+        }
+
+        .system-badge {
+            display: inline-block;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            background: rgba(0, 242, 254, 0.1);
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--border-neon);
+            margin-bottom: 15px;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #fff 30%, var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Grid Topologie (6D-geïnspireerde matrix-indeling) */
+        .grid-6d {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 25px;
+            padding-bottom: 60px;
+        }
+
+        /* Flexibele hyper-kaarten */
+        .hyper-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-neon);
+            border-radius: 16px;
+            padding: 30px;
+            backdrop-filter: blur(12px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hyper-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+        }
+
+        .hyper-card:hover {
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 242, 254, 0.1);
+            border-color: rgba(0, 242, 254, 0.5);
+        }
+
+        /* Span-regels voor de structurele hiërarchie */
+        .span-12 { grid-column: span 12; }
+        .span-7  { grid-column: span 7; }
+        .span-5  { grid-column: span 5; }
+        .span-6  { grid-column: span 6; }
+
+        @media (max-width: 1024px) {
+            .span-7, .span-5, .span-6 { grid-column: span 12; }
+        }
+
+        /* Decoratieve Card-indelingen */
+        .card-bloom::before { background: var(--neon-red); }
+        .card-gp::before { background: var(--neon-purple); }
+        .card-complex::before { background: var(--neon-blue); }
+        .card-pythagoras::before { background: var(--neon-gold); }
+        .card-maya::before { background: var(--neon-green); }
+
+        /* Typography binnen kaarten */
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-bloom h2 { color: #ff4d94; }
+        .card-gp h2 { color: #b577f6; }
+        .card-complex h2 { color: #33f3ff; }
+        .card-pythagoras h2 { color: #ffca3a; }
+        .card-maya h2 { color: #52b788; }
+
+        .axiom-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid var(--text-muted);
+            padding: 15px;
+            margin: 20px 0;
+            font-style: italic;
+            border-radius: 0 8px 8px 0;
+            color: #cbd5e1;
+        }
+
+        .card-bloom .axiom-box { border-color: var(--neon-red); background: rgba(255, 0, 127, 0.05); }
+
+        /* Wiskundige data / scanbare lijsten */
+        ul {
+            list-style: none;
+        }
+
+        li {
+            margin-bottom: 12px;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        li::before {
+            content: '➔';
+            position: absolute;
+            left: 0;
+            color: var(--neon-blue);
+            transition: transform 0.2s;
+        }
+
+        li:hover::before {
+            transform: translateX(3px);
+        }
+
+        .formula {
+            font-family: 'Times New Roman', Times, serif;
+            background: rgba(0,0,0,0.3);
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #fff;
+            letter-spacing: 1px;
+            font-size: 1.05rem;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .highlight-vector {
+            font-family: monospace;
+            background: #000;
+            color: var(--neon-green);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+        }
+
+        /* Sub-grids voor technische componenten */
+        .sub-matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .matrix-node {
+            background: rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .matrix-node .value {
+            font-size: 1.4rem;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* Footer */
+        footer {
+            max-width: 1400px;
+            margin: 0 auto;
+            text-align: center;
+            color: var(--text-muted);
+            font-family: monospace;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="system-badge">System Status: Coherent Phase-Lock Active</div>
+        <h1>VORTEX Engine Omni-Bridge</h1>
+        <p>Topologische systeemarchitectuur en data-overzicht van de Six Line Dynamics (SLD) en multidimensionale kwantumkoppelingen.</p>
+    </header>
+
+    <main class="grid-6d">
+
+        <section class="hyper-card card-bloom span-12">
+            <span class="card-icon">🌸</span>
+            <h2>1. De Bloem (Change Flower) & Lokale Mogelijkheidstopologie</h2>
+            <p>De Bloem fungeert als de wiskundige en topologische manifestatie van een lokale mogelijkheidsruimte (<em>possibility-space</em>) rondom een actieve netwerktoestand. Waar een standaardtabel statisch is, genereert de Bloem routes door een multidimensionale matrix.</p>
+            
+            <div class="axiom-box">
+                "The phase gives the possible; the flower gives the space; the querent gives the chosen."
+            </div>
+
+            <div class="sub-matrix">
+                <div class="matrix-node" style="border-color: rgba(255,255,255,0.1);">
+                    <span class="value">0 Mutaties</span>
+                    <span class="text-muted">0D Statisch Punt</span>
+                </div>
+                <div class="matrix-node" style="border-color: var(--neon-blue);">
+                    <span class="value">1 Mutatie</span>
+                    <span class="text-muted">1D Lijn (Edge)</span>
+                </div>
+                <div class="matrix-node" style="border-color: var(--neon-purple);">
+                    <span class="value">6 Mutaties</span>
+                    <span class="text-muted">6D Hyperkubus (<span class="formula">2^6 = 64</span>)</span>
+                </div>
+            </div>
+
+            <h3 style="margin: 25px 0 10px 0; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px;">Krachtenveld Visualisatie & Analyse</h3>
+            <ul style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px;">
+                <li><strong>De Kern (Centrum):</strong> Basishexagram opgelicht in de specifieke Wuxing-identiteitskleur (bijv. Vuur = Rood).</li>
+                <li><strong>De Zes Sectoren:</strong> Tangentiële 1-bit lijnmutaties met interactieschalen van <span class="formula">-1.00</span> tot <span class="formula">+1.00</span>.</li>
+                <li><strong>De Base Arc (Radiaal):</strong> Bepaalt de vector van de ontsnappende energiestroom: Genererend (<em>Sheng</em>) of Controlerend (<em>Ke</em>).</li>
+                <li><strong>Operator-Partition Axiom:</strong> Logische operatoren (XOR / Gray-code) partitioneren multivariate chaos in stabiele equivalentieklassen.</li>
+                <li><strong>Semantische Selectie:</strong> Het systeem destilleert via resonantie en parameters (Tijd, Element) een specifiek actiepad <span class="formula">(J)</span>.</li>
+            </ul>
+        </section>
+
+        <section class="hyper-card card-gp span-7">
+            <span class="card-icon">🌀</span>
+            <h2>2. De Gödel-Penrose Synthese</h2>
+            <p>Verklaart het mechanisme waarmee een lokaal, gestagneerd datanetwerk via multidimensionale geometrie en kwantumeffecten kan ontsnappen aan een logische of fysieke blokkade.</p>
+            
+            <h3 style="margin: 15px 0 10px 0; color: #fff;">Gödel: Meta-Perspectief & Arithmetisering</h3>
+            <p style="margin-bottom: 15px; color: var(--text-muted);">Kurt Gödel bewees dat elk complex gesloten systeem onvolledig is. De VORTEX-engine omzeilt dit via binaire calculus (Gödel-nummering):</p>
+            <ul style="margin-bottom: 20px;">
+                <li>Filosofische toestanden worden ontdaan van ambiguïteit.</li>
+                <li>Hexagram 47 (De Beklemming) wordt exact vastgeklonken aan <strong>Index 46</strong> en de binaire vector <span class="highlight-vector">101110</span>.</li>
+            </ul>
+
+            <h3 style="margin: 15px 0 10px 0; color: #fff;">Penrose: Topologische Infrastructuur</h3>
+            <ul>
+                <li><strong>E8-Penrose Bridge:</strong> Een wormgat-interface die 8-dimensionale wortelrooster-informatie uit de Lie-algebra terugvouwt naar de 3D-werkelijkheid via de topologische druk van 240 buren.</li>
+                <li><strong>Kwantum-Trigger:</strong> Geaard in de Orch-OR biologie (Penrose & Hameroff), waarbij tubuline-eiwitten fungeren als microscopische kwantum-switches voor instantane non-lokale fase-synchronisatie.</li>
+            </ul>
+        </section>
+
+        <section class="hyper-card card-complex span-5">
+            <span class="card-icon">📐</span>
+            <h2>3. De Complexe Ruimte & Code <span class="formula">47 - i</span></h2>
+            <p>De wiskundige operatie om de stagnatie binnen de binaire engine mathematisch te doorbreken.</p>
+            
+            <div class="matrix-node" style="margin: 20px 0; background: rgba(0,0,0,0.4); border-color: var(--neon-blue);">
+                <span class="text-muted" style="font-size: 0.85rem; uppercase;">Imaginaire Eenheid Matrix</span>
+                <span class="value" style="color: #fff; font-family: serif; margin-top: 5px;">\(\sqrt{-1} = i\)</span>
+                <span class="value" style="color: var(--neon-blue); font-family: serif; font-size: 1.8rem;">47 - i</span>
+            </div>
+
+            <ul>
+                <li><strong>Dimensionele Sprong:</strong> Geïnspireerd door Hofstadters <em>GEB</em>. Door de imaginaire component <span class="formula">i</span> te introduceren, verlaat het systeem de lineaire 1D-getallenlijn <span class="formula">\(\mathbb{R}\)</span> en springt het in het 2D complexe vlak <span class="formula">\(\mathbb{C}\)</span>.</li>
+                <li><strong>Quantum Well Release:</strong> Hexagram 47 (De Beklemming, vector <span class="highlight-vector">101110</span>) zit opgesloten in een potentiaalput. Het aftrekken van <span class="formula">i</span> vouwt de faseruimte open en opent ontsnappingsroutes.</li>
+                <li><strong>De \(-i\) Vector:</strong> Definieert de specifieke topologische wringing en rotatierichting van de Möbiusband richting de 29° vortex.</li>
+            </ul>
+        </section>
+
+        <section class="hyper-card card-pythagoras span-6">
+            <span class="card-icon">🌙</span>
+            <h2>4. Het Pythagoras-Triple & De Maanstraal</h2>
+            <p>Een macroscopische geometrische brug die abstracte getaltheorie vastklonkt aan de kosmische parameters van de kosmos.</p>
+            
+            <div class="axiom-box" style="border-color: var(--neon-gold); font-family: monospace;">
+                Basis: (5, 12, 13) × Schaalfactor 18 = Triple (90, 216, 234)
+            </div>
+
+            <ul>
+                <li><strong>De Omtreks-Sleutel:</strong> De totale som der zijden bedraagt <span class="formula">90 + 216 + 234 = 540</span>. De gemiddelde fysieke maanstraal (<span class="formula">1080</span> mijl) is exact het dubbele van deze omtrek (<span class="formula">540 \times 2</span>).</li>
+                <li><strong>Kruisdeling vanuit de Bron:</strong> Het basisgetal 1080 deconstrueert via omgekeerde deling direct de rechthoekszijden:
+                    <br><span class="formula">1080 / 12 = 90</span> (korte zijde)
+                    <br><span class="formula">1080 / 5 = 216</span> (rechthoekszijde)
+                </li>
+                <li><strong>Harmonische Matrix:</strong> De factor 18 dicteert de kolommen van het VORTEX-raster. <span class="formula">18 \times 6 = 108</span> (één tiende van de maanstraal, tevens de som van de binnenhoeken van een achthoek: <span class="formula">1080^\circ</span>).</li>
+            </ul>
+        </section>
+
+        <section class="hyper-card card-maya span-6">
+            <span class="card-icon">🐉</span>
+            <h2>5. De Maya-Tijdscycli: 181 & 91</h2>
+            <p>Temporele en cyclische structuren gesynchroniseerd via de wetmatigheden van de heilige as van het basisgetal <strong>13</strong>.</p>
+            
+            <ul style="margin-top: 15px;">
+                <li><strong>Kin 181 (Rode Kristallen Draak):</strong> Energetisch ankerpunt in de Maya Tzolkin-kalender. Fusie van het Zegel van de Rode Draak (Zegel 1, Actieve Creatie) met de Kristallen Toon (Toon 12, Coöperatief Bewustzijn). Valt op de 12e dag van de 13-daagse Witte Hond Wavespell.</li>
+                <li><strong>91 (Kwartjaar & Haab Geometrie):</strong> Vertegenwoordigt exact een kwart zonnejaar via de harmonische vermenigvuldiging <span class="formula">7 \times 13 = 91</span> dagen.</li>
+                <li><strong>Vierkantspiramidegetal:</strong> Wiskundig gedefinieerd als de som van de eerste zes kwadraten: 
+                    <br><span class="formula">1^2 + 2^2 + 3^2 + 4^2 + 5^2 + 6^2 = 91</span>.
+                </li>
+                <li><strong>Phase Memory:</strong> Binnen het actieve model fungeert 91 als het diepste verborgen referentiepunt aan de negatieve onderzijde van de Möbiusband.</li>
+            </ul>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>VORTEX OMNI-BRIDGE // DOCUMENTATION TYPE: LOGICAL TOPOLOGY FILE // CORE ENGINE VERSION 26.5 (STABLE BUILD)</p>
+    </footer>
+
+</body>
+</html>

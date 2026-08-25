@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VORTEX-91 Architecture Telemetry</title>
+    <style>
+        :root {
+            --bg-color: #0a0c10;
+            --panel-bg: #121620;
+            --accent-cyan: #00f3ff;
+            --accent-amber: #ffb700;
+            --accent-magenta: #ff0055;
+            --text-color: #e2e8f0;
+            --border-color: #22293a;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--accent-cyan);
+            padding-bottom: 10px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        h1 {
+            color: var(--accent-cyan);
+            margin: 0;
+            font-size: 24px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: #8a99ad;
+            margin-top: 5px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--accent-cyan);
+        }
+
+        .panel.amber::before { background-color: var(--accent-amber); }
+        .panel.magenta::before { background-color: var(--accent-magenta); }
+
+        h2 {
+            font-size: 16px;
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .panel-cyan h2 { color: var(--accent-cyan); }
+        .panel-amber h2 { color: var(--accent-amber); }
+        .panel-magenta h2 { color: var(--accent-magenta); }
+
+        .telemetry-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 15px 0;
+            font-family: sans-serif;
+        }
+
+        .description {
+            font-size: 13px;
+            color: #a0aec0;
+            line-height: 1.5;
+        }
+
+        /* Specifieke visualisaties */
+        .pyramid-visual {
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .pyramid-layer {
+            height: 12px;
+            background: linear-gradient(90deg, #ffb700, #ff7700);
+            margin: 2px 0;
+            border-radius: 2px;
+            text-align: center;
+            font-size: 9px;
+            color: #000;
+            font-weight: bold;
+            line-height: 12px;
+        }
+
+        .bar-container {
+            background-color: #1a202c;
+            border-radius: 4px;
+            height: 20px;
+            width: 100%;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background-color: var(--accent-cyan);
+            width: 0%;
+            transition: width 1s ease-in-out;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            border-radius: 3px;
+            background-color: #2d3748;
+            margin-top: 10px;
+        }
+
+        .pulse {
+            animation: pulse-animation 2s infinite;
+        }
+
+        @keyframes pulse-animation {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; text-shadow: 0 0 10px var(--accent-magenta); }
+            100% { opacity: 0.6; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>VORTEX Engine Control Matrix</h1>
+        <div class="subtitle">Systeemonderzoek & Real-time Core Ankerpunt: 91</div>
+    </header>
+
+    <div class="grid-container">
+
+        <div class="panel panel-cyan">
+            <h2>1. Möbiusband Tijd-Fase <span>[L1 Telemetry]</span></h2>
+            <div class="telemetry-value" id="l1-state">91 / 120 STATUS</div>
+            <p class="description">
+                De 60-delige Jiazi-cyclus vereist 120 stappen voor een volledige rotatie. 
+                Ankerpunt 91 bevindt zich diep op de <strong>'Negative Sheet' (Fase-geheugen)</strong>.
+            </p>
+            <span class="status-badge" style="color: var(--accent-cyan); border: 1px solid var(--accent-cyan);">ONDERKANT VAN DE TIJD ACTIEF</span>
+        </div>
+
+        <div class="panel panel-amber amber">
+            <h2>2. 6D I Tjing-Piramide (SLD) <span>∑(1² t/m 6²)</span></h2>
+            <div class="telemetry-value" id="l2-state">91 Eenheden</div>
+            <p class="description">
+                Kristallisatie van de complete zestraps-faseruimte. Multivariate kwadratische accumulatie over 6 dimensies:
+            </p>
+            <div class="pyramid-visual">
+                <div class="pyramid-layer" style="width: 100%;">6² (36)</div>
+                <div class="pyramid-layer" style="width: 80%;">5² (25)</div>
+                <div class="pyramid-layer" style="width: 65%;">4² (16)</div>
+                <div class="pyramid-layer" style="width: 45%;">3² (9)</div>
+                <div class="pyramid-layer" style="width: 25%;">2² (4)</div>
+                <div class="pyramid-layer" style="width: 10%;">1² (1)</div>
+            </div>
+        </div>
+
+        <div class="panel panel-cyan">
+            <h2>3. Raster-Resonantie <span>7 × 13 Matrix</span></h2>
+            <div class="telemetry-value">91 Dagen <span style="font-size: 16px; color: #8a99ad;">(1 Kwartjaar)</span></div>
+            <p class="description">
+                De langste as van de Pythagoras-driehoek (13) ontmoet de absolute topologische grens van de 7 faseverschuivingsringen.
+            </p>
+            <div class="bar-container">
+                <div class="bar-fill" id="grid-progress"></div>
+            </div>
+            <div class="subtitle" style="margin-top: 5px;">Dekt exact 38.89% van het totale 13x18 VORTEX-grid (234 datapunten).</div>
+        </div>
+
+        <div class="panel panel-magenta magenta">
+            <h2>4. Bongard Meta-Sprong <span>Takens Filter</span></h2>
+            <div class="telemetry-value var-color pulse" id="l4-status" style="color: var(--accent-magenta); font-size: 20px;">EVALUEREN...</div>
+            <p class="description">
+                Zodra de chaos-densiteit de grens van 91 passeert, switcht het neurale netwerk van klassieke patroonherkenning naar 
+                <strong>meta-beschrijvingen</strong> op het overkoepelende L4 Palace-niveau.
+            </p>
+            <span id="l4-badge" class="status-badge" style="background-color: var(--accent-magenta); color: #000;">STRANGE ATTRACTOR BINDING</span>
+        </div>
+
+    </div>
+
+    <script>
+        // Dynamische simulatie scripts om het dashboard leven in te blazen
+        window.addEventListener('DOMContentLoaded', () => {
+            
+            // L3 Progress Bar animatie naar de exacte grid dekking
+            setTimeout(() => {
+                document.getElementById('grid-progress').style.width = '38.89%';
+            }, 500);
+
+            // L1 Real-time Torsie Simulator
+            let step = 0;
+            setInterval(() => {
+                step = (step + 1) % 120;
+                const isHidden = step >= 60;
+                const visibleIndex = step % 60;
+                const dist = Math.abs(step - 91);
+                const twist = Math.cos(Math.PI * (dist / 60.0)).toFixed(3);
+                
+                document.getElementById('l1-state').innerHTML = `Stap ${step} <span style="font-size:14px; color:#8a99ad;">(Twist: ${twist})</span>`;
+            }, 300);
+
+            // L4 Meta-jump Schakelaar simulatie
+            setInterval(() => {
+                const randomChaos = (Math.random() * 40 + 70); // Genereert chaos tussen 70 en 110
+                const statusElement = document.getElementById('l4-status');
+                const badgeElement = document.getElementById('l4-badge');
+
+                if (randomChaos > 91) {
+                    statusElement.innerHTML = `CHAOS: ${randomChaos.toFixed(1)} > 91 <br>L4 PALACE META-DESCRIPTION`;
+                    statusElement.style.color = "var(--accent-magenta)";
+                    badgeElement.style.backgroundColor = "var(--accent-magenta)";
+                    badgeElement.innerText = "STRANGE ATTRACTOR ACTIVE";
+                } else {
+                    statusElement.innerHTML = `CHAOS: ${randomChaos.toFixed(1)} ≤ 91 <br>CLASSICAL RESOLUTION`;
+                    statusElement.style.color = "#8a99ad";
+                    badgeElement.style.backgroundColor = "#2d3748";
+                    badgeElement.innerText = "UNRESOLVED CHAOS";
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

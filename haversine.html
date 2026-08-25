@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haversine Navigatie & Tijd Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background-color: #1e293b;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+        }
+        h1 {
+            color: #38bdf8;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 15px;
+            margin-top: 0;
+            font-size: 2rem;
+        }
+        h2 {
+            color: #f59e0b;
+            margin-top: 35px;
+            font-size: 1.4rem;
+            border-left: 4px solid #f59e0b;
+            padding-left: 10px;
+        }
+        p.intro {
+            color: #94a3b8;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .card {
+            background-color: #0f172a;
+            padding: 15px;
+            border-radius: 8px;
+            border-top: 3px solid #38bdf8;
+        }
+        .card.amsterdam { border-top-color: #38bdf8; }
+        .card.parijs { border-top-color: #f43f5e; }
+        .card.stockholm { border-top-color: #10b981; }
+        .card.twintowers { border-top-color: #a855f7; }
+        
+        h3 { margin-top: 0; color: #cbd5e1; font-size: 1.1rem; }
+        .card p { margin: 5px 0; font-size: 0.9rem; color: #94a3b8; }
+        .card b { color: #f1f5f9; }
+
+        .log-session {
+            background-color: #020617;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            border: 1px solid #334155;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .highlight { color: #4ade80; font-weight: bold; }
+        .time-highlight { color: #38bdf8; font-weight: bold; }
+        .math-variable { color: #f59e0b; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Haversine Formule & Geodetische Reistijden</h1>
+    <p class="intro">Dit dashboard berekent de exacte grootcirkelafstanden (kortste route over de bolvormige aarde) en de bijbehorende vliegtijden gebaseerd op een kruissnelheid van <b>850 km/u</b>.</p>
+    
+    <h2>Locatie Database</h2>
+    <div class="grid">
+        <div class="card stockholm">
+            <h3>Stockholm</h3>
+            <p>Lat: <b>59.3293° N</b></p>
+            <p>Lon: <b>18.0686° O</b></p>
+        </div>
+        <div class="card amsterdam">
+            <h3>Amsterdam</h3>
+            <p>Lat: <b>52.3676° N</b></p>
+            <p>Lon: <b>4.9041° O</b></p>
+        </div>
+        <div class="card parijs">
+            <h3>Parijs</h3>
+            <p>Lat: <b>48.8566° N</b></p>
+            <p>Lon: <b>2.3522° O</b></p>
+        </div>
+        <div class="card twintowers">
+            <h3>Twin Towers (WTC)</h3>
+            <p>Lat: <b>40.7118° N</b></p>
+            <p>Lon: <b>74.0131° W</b></p>
+        </div>
+    </div>
+
+    <h2>Traject 1: Stockholm ➔ Amsterdam</h2>
+    <div class="log-session" id="output-stockholm-dam">Berekening starten...</div>
+
+    <h2>Traject 2: Amsterdam ➔ Twin Towers (New York)</h2>
+    <div class="log-session" id="output-dam-wtc">Berekening starten...</div>
+</div>
+
+<script>
+    // Centrale Haversine en reistijd reken-engine
+    function berekenHaversineTraject(loc1, loc2, vanNaam, naarNaam) {
+        const R = 6371.0; // Straal van de aarde in km
+        const SNELHEID = 850; // Vliegtuigsnelheid in km/u
+        
+        // Converteren naar radialen
+        const phi1 = loc1.lat * Math.PI / 180;
+        const phi2 = loc2.lat * Math.PI / 180;
+        const deltaPhi = (loc2.lat - loc1.lat) * Math.PI / 180;
+        const deltaLambda = (loc2.lon - loc1.lon) * Math.PI / 180;
+
+        // Haversine formule component 'a'
+        const a = Math.sin(deltaPhi / 2) ** 2 + Math.cos(phi1) * Math.cos(phi2) * Math.sin(deltaLambda / 2) ** 2;
+        
+        // Centrale hoek 'c'
+        const c = 2 * Math.asin(Math.sqrt(Math.min(1.0, a)));
+        
+        // Afstand d
+        const afstand = R * c;
+
+        // Tijd berekening (Afstand / Snelheid)
+        const totaleUren = afstand / SNELHEID;
+        const uren = Math.floor(totaleUren);
+        const minuten = Math.round((totaleUren - uren) * 60);
+
+        // Genereer de logstring voor de UI
+        let log = `=== VLUGPLAN: ${vanNaam.toUpperCase()} naar ${naarNaam.toUpperCase()} ===\n\n`;
+        log += `1. Goniometrische Transformatie naar Radialen:\n`;
+        log += `   φ1 (Start Lat) : ${phi1.toFixed(6)} rad | φ2 (Eind Lat) : ${phi2.toFixed(6)} rad\n`;
+        log += `   Δφ (Verschil)  : ${deltaPhi.toFixed(6)} rad | Δλ (Verschil)  : ${deltaLambda.toFixed(6)} rad\n\n`;
+        log += `2. Matrix Componenten:\n`;
+        log += `   Haversine parameter (a) = ${a.toFixed(8)}\n`;
+        log += `   Centrale hoek (c / Δσ)  = ${c.toFixed(6)} radialen\n\n`;
+        log += `3. Resultaten (Kruissnelheid: ${SNELHEID} km/u):\n`;
+        log += `   --------------------------------------------------------\n`;
+        log += `   => GEODETISCHE AFSTAND : [AFSTAND] km\n`;
+        log += `   => GESCHATTE VLIEGTIJD : [TIJD]\n`;
+        log += `   --------------------------------------------------------\n`;
+
+        return {
+            log: log,
+            afstandStr: `${afstand.toLocaleString('nl-NL', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
+            tijdStr: `${uren} uur en ${minuten} minuten`
+        };
+    }
+
+    window.onload = function() {
+        // Coördinaten definities (Let op: Westelijke lengtegraad voor NY is wiskundig negatief)
+        const stockholm = { lat: 59.3293, lon: 18.0686 };
+        const amsterdam = { lat: 52.3676, lon: 4.9041 };
+        const twintowers = { lat: 40.7118, lon: -74.0131 };
+
+        // 1. Berekening Stockholm -> Amsterdam
+        const traject1 = berekenHaversineTraject(stockholm, amsterdam, "Stockholm", "Amsterdam");
+        const container1 = document.getElementById('output-stockholm-dam');
+        let html1 = traject1.log.replace("[AFSTAND]", traject1.afstandStr).replace("[TIJD]", traject1.tijdStr);
+        container1.innerText = html1;
+        container1.innerHTML = container1.innerHTML
+            .replace(traject1.afstandStr, `<span class='highlight'>${traject1.afstandStr}</span>`)
+            .replace(traject1.tijdStr, `<span class='time-highlight'>${traject1.tijdStr}</span>`);
+
+        // 2. Berekening Amsterdam -> Twin Towers
+        const traject2 = berekenHaversineTraject(amsterdam, twintowers, "Amsterdam", "Twin Towers");
+        const container2 = document.getElementById('output-dam-wtc');
+        let html2 = traject2.log.replace("[AFSTAND]", traject2.afstandStr).replace("[TIJD]", traject2.tijdStr);
+        container2.innerText = html2;
+        container2.innerHTML = container2.innerHTML
+            .replace(traject2.afstandStr, `<span class='highlight'>${traject2.afstandStr}</span>`)
+            .replace(traject2.tijdStr, `<span class='time-highlight'>${traject2.tijdStr}</span>`);
+    };
+</script>
+
+</body>
+</html>

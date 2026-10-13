@@ -3,6 +3,10 @@ name = "podcast-rss-server"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "index"
+path = "api/index.rs"
+
 [dependencies]
 axum = "0.8.9"
 reqwest = "0.13.4"

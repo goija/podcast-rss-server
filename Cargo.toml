@@ -4,8 +4,17 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+<<<<<<< HEAD
 axum = "0.8.9"
 reqwest = "0.13.4"
 tokio = { version = "1", features = ["full"] }
 tower-http = { version = "0.7.0", features = ["cors"] }
 vercel_runtime = "1.1.1"
+=======
+axum = "0.7"
+tokio = { version = "1.0", features = ["full"] }
+id3 = "1.5"
+walkdir = "2.4"
+chrono = "0.4"
+tower-http = { version = "0.5", features = ["fs"] }
+>>>>>>> a5374f3 (feat: robuuste bestandsnaam-naar-titel parser en axum rss server)

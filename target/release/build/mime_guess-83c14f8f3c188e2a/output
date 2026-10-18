@@ -1,0 +1,1 @@
+cargo:rustc-env=MIME_TYPES_GENERATED_PATH=/home/ontwerp/podcast-rss-server/target/release/build/mime_guess-83c14f8f3c188e2a/out/mime_types_generated.rs
